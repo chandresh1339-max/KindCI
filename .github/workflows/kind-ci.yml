@@ -30,7 +30,7 @@ jobs:
           kubectl get nodes
       - name: Deploy manifests
         run: |
-          kubectl apply -f k8s/
+          kubectl apply -f .github/k8s/deployment.yaml
       - name: Wait for deployment
         run: |
           kubectl rollout status deployment/my-app --timeout=60s

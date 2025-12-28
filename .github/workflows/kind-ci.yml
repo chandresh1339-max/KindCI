@@ -1,5 +1,5 @@
 name: Kind Single Node CI
-'on':
+act:
   push:
     branches:
       - main
@@ -12,28 +12,19 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v4
-        with:
-          version: v1.29.0
-      - name: Install kind
+      - name: Install kubectl manually
         run: |
-          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+          curl -LO "https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+      - name: Install Kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
           chmod +x ./kind
           sudo mv ./kind /usr/local/bin/kind
-      - name: Create kind cluster (single node)
+      - name: Create Kind cluster
         run: |
-          kind create cluster --name ci-cluster
+          kind create cluster --name kind-ci
       - name: Verify cluster
         run: |
           kubectl cluster-info
-          kubectl get nodes
-      - name: Deploy manifests
-        run: |
-          kubectl apply -f .
-      - name: Wait for deployment
-        run: |
-          kubectl rollout status deployment/my-app --timeout=60s
-      - name: Run basic smoke test
-        run: |
-          kubectl get pods

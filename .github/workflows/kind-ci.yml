@@ -28,3 +28,7 @@ jobs:
       - name: Verify cluster
         run: |
           kubectl cluster-info
+      - name: Trigger Jenkins
+        run: |
+         curl -X POST http://JENKINS_URL/job/kind-ci-cd/build?token=TOKEN
+

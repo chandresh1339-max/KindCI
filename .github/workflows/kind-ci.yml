@@ -30,5 +30,5 @@ jobs:
           kubectl cluster-info
       - name: Trigger Jenkins
         run: |
-         curl -X POST http://JENKINS_URL/job/kind-ci-cd/build?token=TOKEN
+         curl -X POST http://localhost:8080/job/kind-ci-cd
 

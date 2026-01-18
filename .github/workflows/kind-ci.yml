@@ -1,40 +1,44 @@
 name: Kind Single Node CI
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
+
 jobs:
   kind-ci:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      - name: Install kubectl manually
+
+      - name: Install kubectl
         run: |
-          curl -LO "https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl"
+          curl -LO https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
+
       - name: Install Kind
         run: |
-          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
-          chmod +x ./kind
-          sudo mv ./kind /usr/local/bin/kind
+          curl -Lo kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/
+
       - name: Create Kind cluster
         run: |
           kind create cluster --name kind-ci
+
       - name: Verify cluster
         run: |
           kubectl cluster-info
-          - name: Port-forward Jenkins
-            run: |
-              kubectl port-forward svc/jenkins 8080:8080 -n jenkins &
-                sleep 10
-      
+
+      - name: Port-forward Jenkins
+        run: |
+          kubectl port-forward svc/jenkins 8080:8080 -n jenkins &
+          sleep 10
+
       - name: Trigger Jenkins
         run: |
           curl -X POST http://localhost:8080/job/kind-ci-cd/build
-      
-      

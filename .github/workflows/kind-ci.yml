@@ -28,7 +28,13 @@ jobs:
       - name: Verify cluster
         run: |
           kubectl cluster-info
+          - name: Port-forward Jenkins
+            run: |
+              kubectl port-forward svc/jenkins 8080:8080 -n jenkins &
+                sleep 10
+      
       - name: Trigger Jenkins
         run: |
-         curl -X POST http://localhost:8080/job/kind-ci-cd
-
+          curl -X POST http://localhost:8080/job/kind-ci-cd/build
+      
+      
